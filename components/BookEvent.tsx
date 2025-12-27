@@ -1,23 +1,30 @@
 'use client'
 
 import React, { useState } from "react"
+import { createBooking } from "@/lib/actions/booking.actions";
 
-const BookEvent = () => {
+const BookEvent = ({eventId, slug}: {eventId: string, slug: string}) => {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setTimeout(() => {
-            setSubmitted(true)
-        }, 1000);
+        const { success } = await createBooking({ eventId, slug, email });
+        // TODO
+        if(success) {
+            setSubmitted(true);
+            
+        } else {
+            console.error('Booking creation failed')
+            
+        }
     }
     return (
     <div id='book-event'>
         {submitted ? (
             <p className="text-sm">Thank you for signing up!</p>
         ) : (
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email">
                         Email Address
@@ -31,7 +38,7 @@ const BookEvent = () => {
                     />
                 </div>
 
-                <button className="button-submit" type="submit" onClick={e => e.preventDefault()}>Submit</button>
+                <button className="button-submit" type="submit" >Submit</button>
             </form>
         )}
     </div>
